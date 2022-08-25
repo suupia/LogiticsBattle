@@ -8,6 +8,10 @@ public class InputMGR : MonoBehaviour
     GameObject selectedBox;
     int selectedIndex;
 
+
+    //初期化フラグ
+    bool isFirstSelectingBoxByIndex = true;
+
     public enum Step
     {
         Selecting,
@@ -23,7 +27,7 @@ public class InputMGR : MonoBehaviour
     private void OnEnable()
     {
         selectedIndex = 0;
-        selectedBox = EditingMGR.instance.GetBoxFromWarehouse()[0];
+        SelectingBoxByIndex(0);
     }
 
     private void Update()
@@ -87,10 +91,20 @@ public class InputMGR : MonoBehaviour
 
     private void SelectingBoxByIndex(int index)
     {
-        selectedBox.GetComponent<SpriteRenderer>().color = Color.white;
+        if (isFirstSelectingBoxByIndex)
+        {
+            selectedBox = EditingMGR.instance.GetBoxFromWarehouse()[index];
+            selectedBox.GetComponent<SpriteRenderer>().color = Color.green;
+            isFirstSelectingBoxByIndex = false;
 
-        selectedBox = EditingMGR.instance.GetBoxFromWarehouse()[index];
-        selectedBox.GetComponent<SpriteRenderer>().color = Color.red;
+        }
+        else
+        {
+            selectedBox.GetComponent<SpriteRenderer>().color = Color.white;
+            selectedBox = EditingMGR.instance.GetBoxFromWarehouse()[index];
+            selectedBox.GetComponent<SpriteRenderer>().color = Color.green;
+        }
+
 
     }
 
