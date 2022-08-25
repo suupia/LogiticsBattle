@@ -4,13 +4,14 @@ using UnityEngine;
 
 public class GameManager : MonoBehaviour
 {
-
     public static GameManager instance;
 
     [SerializeField] private GameObject __Title;
     [SerializeField] private GameObject __Editing;
     [SerializeField] private GameObject __Battleing;
     [SerializeField] private GameObject __Result;
+
+    [SerializeField] public EditingMGR editingMGR;
 
 
     public enum State
@@ -28,6 +29,11 @@ public class GameManager : MonoBehaviour
 
     private void Awake()
     {
+        Singletonization();
+    }
+
+    public void Singletonization() //重複して呼んでも問題ない
+    {
         //シングルトン化
         if (instance == null)
         {
@@ -37,13 +43,17 @@ public class GameManager : MonoBehaviour
         {
             Destroy(gameObject);
         }
-
     }
 
     private void Start()
     {
         //デバッグ
-        _state = State.Editing;
+        Editing();
     }
 
+    public void Editing()
+    {
+        __Editing.SetActive(true);
+        _state = State.Editing;
+    }
 }

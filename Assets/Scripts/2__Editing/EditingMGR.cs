@@ -4,7 +4,10 @@ using UnityEngine;
 
 public class EditingMGR : MonoBehaviour
 {
-    public static EditingMGR instance;
+    [SerializeField] public InputMGR inputMGR;
+
+
+    public bool isInitialized = false;
 
     [SerializeField] GameObject boxParentInWarehouse;
 
@@ -12,20 +15,12 @@ public class EditingMGR : MonoBehaviour
     [SerializeField] GameObject light_1x1;
 
     GameObject[] warehouses;
-    private void Awake()
-    {
-        //シングルトン化
-        if (instance == null)
-        {
-            instance = this;
-        }
-        else if (instance != this)
-        {
-            Destroy(gameObject);
-        }
 
-    }
     private void OnEnable()
+    {
+        if (!isInitialized)Init();
+    }
+    public void Init()
     {
         //エクセルから倉庫にある箱の数を読み込む
         warehouses = new GameObject[3];
@@ -40,7 +35,10 @@ public class EditingMGR : MonoBehaviour
         DisplayingBoxesInWarehouse(1);
         DisplayingBoxesInWarehouse(2);
 
+        //アタッチされているスクリプトの初期化
+        inputMGR.Init();
 
+        isInitialized = true;
 
     }
 
@@ -53,8 +51,6 @@ public class EditingMGR : MonoBehaviour
         //GameObject boxInWarehouse = Instantiate(warehouses[index] ,boxParentInWarehouse.transform);
         warehouses[index].transform.localPosition = anchorPos + new Vector2(hMargin * index, 0);
         //primitiveObject.transform.localScale = localScale;
-
-
 
     }
 

@@ -4,12 +4,21 @@ using UnityEngine;
 
 public class InputMGR : MonoBehaviour
 {
-    [SerializeField] float speed; //箱の移動の速さ
+    EditingMGR editingMGR;
+
+    //Selecting
     GameObject selectedBox;
     int selectedIndex;
 
 
+    //Placing
+    [SerializeField] GameObject boxPlaced; //Factoryにおいて操作するゲームオブジェクト
+    [SerializeField] GameObject boxAtDropPoint; //FactoryにおいてboxPlacedの落下地点を表示するゲームオブジェクト
+    [SerializeField] float speed; //箱の移動の速さ
+
     //初期化フラグ
+    bool isFirstSelecting = true;
+    bool isFirstPlacing = true;
     bool isFirstSelectingBoxByIndex = true;
 
     public enum Step
@@ -24,8 +33,12 @@ public class InputMGR : MonoBehaviour
         get { return _step; }
     }
 
-    private void OnEnable()
+
+    public void Init()
     {
+        Debug.Log($"InputMGRのInit()を実行します");
+
+        editingMGR = GameManager.instance.editingMGR;
         selectedIndex = 0;
         SelectingBoxByIndex(0);
     }
@@ -36,11 +49,13 @@ public class InputMGR : MonoBehaviour
 
         if(_step == Step.Selecting)
         {
+            if(isFirstSelecting)FirstSelecting();
             Selecting();
         }
         else if (_step == Step.Placing)
         {
-            Move();
+            if(isFirstPlacing)FirstPlacing();
+            Placing();
 
         }
         else
@@ -49,14 +64,17 @@ public class InputMGR : MonoBehaviour
         }
 
     }
-
+    private void FirstSelecting()
+    {
+        isFirstSelecting = false;
+    }
     private void Selecting()
     {
         //右
         if (Input.GetKeyDown(KeyCode.D))
         {
-            Debug.Log($"右キーが押されました");
-            if (selectedIndex == EditingMGR.instance.GetBoxFromWarehouse().Length - 1)
+            Debug.Log($"Selectingにおいて、右キーが押されました");
+            if (selectedIndex == editingMGR.GetBoxFromWarehouse().Length - 1)
             {
                 selectedIndex = 0;
             }
@@ -71,11 +89,10 @@ public class InputMGR : MonoBehaviour
         //左
         if (Input.GetKeyDown(KeyCode.A))
         {
-            Debug.Log($"左キーが押されました");
-
+            Debug.Log($"Selectingにおいて、左キーが押されました");
             if (selectedIndex == 0)
             {
-                selectedIndex = EditingMGR.instance.GetBoxFromWarehouse().Length - 1;
+                selectedIndex = editingMGR.GetBoxFromWarehouse().Length - 1;
             }
             else
             {
@@ -83,7 +100,13 @@ public class InputMGR : MonoBehaviour
 
             }
             SelectingBoxByIndex(selectedIndex);
+        }
 
+        //決定
+        if (Input.GetKeyDown(KeyCode.E))
+        {
+            Debug.Log($"Selectingにおいて、決定キーが押されました");
+            _step = Step.Placing;
         }
 
 
@@ -93,45 +116,75 @@ public class InputMGR : MonoBehaviour
     {
         if (isFirstSelectingBoxByIndex)
         {
-            selectedBox = EditingMGR.instance.GetBoxFromWarehouse()[index];
+            selectedBox = editingMGR.GetBoxFromWarehouse()[index];
             selectedBox.GetComponent<SpriteRenderer>().color = Color.green;
             isFirstSelectingBoxByIndex = false;
-
         }
         else
         {
             selectedBox.GetComponent<SpriteRenderer>().color = Color.white;
-            selectedBox = EditingMGR.instance.GetBoxFromWarehouse()[index];
+            selectedBox = editingMGR.GetBoxFromWarehouse()[index];
             selectedBox.GetComponent<SpriteRenderer>().color = Color.green;
         }
-
-
     }
 
+    private void FirstPlacing()
+    {
+        boxPlaced = Instantiate(selectedBox);
+        boxPlaced.transform.position = new Vector2(-4.5f,4);
+        boxPlaced.GetComponent<SpriteRenderer>().color = Color.white;
 
-    private void Move()
+        boxAtDropPoint = Instantiate(selectedBox);
+        boxAtDropPoint.transform.position = new Vector2(boxPlaced.transform.position.x,0);
+        boxAtDropPoint.GetComponent<SpriteRenderer>().color = Color.white;
+
+
+
+        boxPlaced.SetActive(true);
+        boxAtDropPoint.SetActive(true);
+
+        isFirstPlacing = false;
+    }
+    private void Placing()
     {
         float hInput = Input.GetAxisRaw("Horizontal");
 
+        //移動
         if (hInput != 0)
         {
-            //Debug.Log("移動キーが入力されました。");
+            Debug.Log("Placingにおいて、移動キーが入力されました。");
 
-            if (CanMove(hInput))
-            {
-                transform.position += new Vector3(hInput * speed, 0);
+            MoveBox(hInput);
+        }
 
-            }
-            else
-            {
-                //Debug.Log($"GanMove({horizontalInput},{verticalInput}はfalseです)");
-                return;
-            }
+        //配置
+
+    }
+
+    private void MoveBox(float hInput)
+    {
+        if (CanMove(hInput))
+        {
+            boxPlaced.transform.position += new Vector3(hInput * speed, 0);
+            boxAtDropPoint.transform.position += new Vector3(hInput * speed, 0);
+
+        }
+        else
+        {
+            //Debug.Log($"GanMove({horizontalInput},{verticalInput}はfalseです)");
+            return;
         }
     }
 
     private bool CanMove(float hInput)
     {
         return true;
+    }
+
+
+
+    private void PlaceBox()
+    {
+
     }
 }
