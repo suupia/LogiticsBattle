@@ -203,6 +203,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 613969077809a2e42aab03383fef65b1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  ground: {fileID: 848357261}
   selectedIndex: 0
   listIndex: 0
   factory: {fileID: 690576171}
@@ -571,7 +572,6 @@ GameObject:
   m_Component:
   - component: {fileID: 848357262}
   - component: {fileID: 848357265}
-  - component: {fileID: 848357264}
   - component: {fileID: 848357263}
   m_Layer: 5
   m_Name: Ground
@@ -609,7 +609,7 @@ BoxCollider2D:
   m_GameObject: {fileID: 848357261}
   m_Enabled: 1
   m_Density: 1
-  m_Material: {fileID: 0}
+  m_Material: {fileID: 6200000, guid: 41cfcb04165958d4a9603be89f3ac403, type: 2}
   m_IsTrigger: 0
   m_UsedByEffector: 0
   m_UsedByComposite: 0
@@ -626,27 +626,6 @@ BoxCollider2D:
   serializedVersion: 2
   m_Size: {x: 1, y: 1}
   m_EdgeRadius: 0
---- !u!50 &848357264
-Rigidbody2D:
-  serializedVersion: 4
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 848357261}
-  m_BodyType: 1
-  m_Simulated: 1
-  m_UseFullKinematicContacts: 0
-  m_UseAutoMass: 0
-  m_Mass: 1
-  m_LinearDrag: 0
-  m_AngularDrag: 0.05
-  m_GravityScale: 1
-  m_Material: {fileID: 6200000, guid: 41cfcb04165958d4a9603be89f3ac403, type: 2}
-  m_Interpolate: 0
-  m_SleepingMode: 1
-  m_CollisionDetection: 0
-  m_Constraints: 0
 --- !u!212 &848357265
 SpriteRenderer:
   m_ObjectHideFlags: 0

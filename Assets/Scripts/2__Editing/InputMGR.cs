@@ -161,7 +161,7 @@ public class InputMGR : MonoBehaviour
         GameObject[] warehouse = editingMGR.GetBoxFromWarehouse();
         for (int i = 0; i < warehouse.Length; i++)
         {
-            //Debug.Log($"warehouse.Length:{warehouse.Length}, listIndex:{listIndex}");
+            Debug.Log($"warehouse.Length:{warehouse.Length}, listIndex:{listIndex}");
             if (notSelectedIndexes.Count !=0 && i == notSelectedIndexes[listIndex]) //リストの要素があることの確認が必要
             {
                 warehouse[i].GetComponent<SpriteRenderer>().color = Color.green;
@@ -244,6 +244,7 @@ public class InputMGR : MonoBehaviour
     {
         selectedBox = editingMGR.GetBoxFromWarehouse()[notSelectedIndexes[listIndex]];
         notSelectedIndexes.Remove(notSelectedIndexes[listIndex]);
+        if (listIndex == notSelectedIndexes.Count) listIndex--; //要素の削除に合わせてイテレータの位置を変える
         ChangeBoxColor();
 
         if (notSelectedIndexes.Count == 0)
