@@ -8,7 +8,10 @@ public class InputMGR : MonoBehaviour
 
     //Selecting
     GameObject selectedBox;
-    int selectedIndex;
+    [SerializeField]int selectedIndex; //デバッグようにserialize
+    List<int> placedIndexes; //Placeした箱のインデックスを保持しておく
+    [SerializeField] int listIndex;
+    List<int> notSelectedIndexes; //まだ選ばれていない箱のインデックス
 
 
     //Moving
@@ -28,7 +31,8 @@ public class InputMGR : MonoBehaviour
     {
         Selecting,
         Moving,
-        Placing
+        Placing,
+        Finish
 
     }
     [SerializeField] private Step _step; //デバッグ用
@@ -45,7 +49,14 @@ public class InputMGR : MonoBehaviour
 
         editingMGR = GameManager.instance.editingMGR;
         selectedIndex = 0;
-        SelectingBoxByIndex(0);
+        placedIndexes = new List<int>();
+        notSelectedIndexes = new List<int>();
+        for(int i = 0; i < editingMGR.GetBoxFromWarehouse().Length; i++)
+        {
+            notSelectedIndexes.Add(i);
+        }
+        listIndex = 0;
+        SelectingBoxByIndex(0,0);
     }
 
     private void Update()
@@ -73,6 +84,12 @@ public class InputMGR : MonoBehaviour
             Debug.LogError($"InputMGRのstepが予期せぬ値になっています step:{step}");
         }
 
+        //デバッグ
+        if(Input.GetKeyDown(KeyCode.Alpha0)) Debug.LogWarning($"{string.Join(",", placedIndexes)}");
+        if (Input.GetKeyDown(KeyCode.Alpha1)) Debug.LogWarning($"{string.Join(",", notSelectedIndexes)}");
+
+
+
     }
 
     //Selecting
@@ -86,32 +103,34 @@ public class InputMGR : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.D))
         {
             Debug.Log($"Selectingにおいて、右キーが押されました");
-            if (selectedIndex == editingMGR.GetBoxFromWarehouse().Length - 1)
-            {
-                selectedIndex = 0;
-            }
-            else
-            {
-                selectedIndex++;
 
+            int preIndex = listIndex;
+
+            listIndex++;
+
+            if(listIndex >= notSelectedIndexes.Count)
+            {
+                listIndex = 0;
             }
-            SelectingBoxByIndex(selectedIndex);
+
+            SelectingBoxByIndex(preIndex,notSelectedIndexes[listIndex]);
         }
 
         //左
         if (Input.GetKeyDown(KeyCode.A))
         {
             Debug.Log($"Selectingにおいて、左キーが押されました");
-            if (selectedIndex == 0)
-            {
-                selectedIndex = editingMGR.GetBoxFromWarehouse().Length - 1;
-            }
-            else
-            {
-                selectedIndex--;
 
+            int preIndex = listIndex;
+
+            listIndex--;
+
+            if (listIndex <= -1)
+            {
+                listIndex = notSelectedIndexes.Count-1;
             }
-            SelectingBoxByIndex(selectedIndex);
+
+            SelectingBoxByIndex(preIndex,notSelectedIndexes[listIndex]);
         }
 
         //決定
@@ -125,18 +144,25 @@ public class InputMGR : MonoBehaviour
 
     }
 
-    private void SelectingBoxByIndex(int index)
+    private void SelectingBoxByIndex(int preIndex, int postIndex)
     {
         if (isFirstSelectingBoxByIndex)
         {
-            selectedBox = editingMGR.GetBoxFromWarehouse()[index];
+            selectedBox = editingMGR.GetBoxFromWarehouse()[postIndex];
             selectedBox.GetComponent<SpriteRenderer>().color = Color.green;
             isFirstSelectingBoxByIndex = false;
         }
         else
         {
-            selectedBox.GetComponent<SpriteRenderer>().color = Color.white;
-            selectedBox = editingMGR.GetBoxFromWarehouse()[index];
+            if (notSelectedIndexes.Contains(preIndex))
+            {
+                selectedBox.GetComponent<SpriteRenderer>().color = Color.white;
+            }
+            else
+            {
+                selectedBox.GetComponent<SpriteRenderer>().color = Color.gray;
+            }
+            selectedBox = editingMGR.GetBoxFromWarehouse()[postIndex];
             selectedBox.GetComponent<SpriteRenderer>().color = Color.green;
         }
     }
@@ -206,8 +232,24 @@ public class InputMGR : MonoBehaviour
     }
     private void Placing()
     {
-        //入力を受け付けない
+        selectedBox = editingMGR.GetBoxFromWarehouse()[notSelectedIndexes[listIndex]];
+        selectedBox.GetComponent<SpriteRenderer>().color = Color.gray;
+        notSelectedIndexes.Remove(notSelectedIndexes[listIndex]);
+
+        if(notSelectedIndexes.Count == 0)
+        {
+            Debug.Log($"すべての箱を配置し終わりました");
+            _step = Step.Finish;
+        }
         _step = Step.Selecting;
         isFirstPlacing = true;
+        
+    }
+
+    private void PlacingBoxByIndex(int index)
+    {
+
+
+        
     }
 }
