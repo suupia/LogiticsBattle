@@ -18,7 +18,7 @@ public class EditingMGR : MonoBehaviour
 
     private void OnEnable()
     {
-        if (!isInitialized)Init();
+        if (!isInitialized) Init();
     }
     public void Init()
     {

@@ -12,8 +12,8 @@ public class InputMGR : MonoBehaviour
 
 
     //Placing
-    [SerializeField] GameObject boxPlaced; //Factoryにおいて操作するゲームオブジェクト
-    [SerializeField] GameObject boxAtDropPoint; //FactoryにおいてboxPlacedの落下地点を表示するゲームオブジェクト
+    [SerializeField] GameObject factory;
+    GameObject boxPlaced; //Factoryにおいて操作するゲームオブジェクト
     [SerializeField] float speed; //箱の移動の速さ
 
     //初期化フラグ
@@ -47,14 +47,14 @@ public class InputMGR : MonoBehaviour
     {
         if (GameManager.instance.state != GameManager.State.Editing) return;
 
-        if(_step == Step.Selecting)
+        if (_step == Step.Selecting)
         {
-            if(isFirstSelecting)FirstSelecting();
+            if (isFirstSelecting) FirstSelecting();
             Selecting();
         }
         else if (_step == Step.Placing)
         {
-            if(isFirstPlacing)FirstPlacing();
+            if (isFirstPlacing) FirstPlacing();
             Placing();
 
         }
@@ -131,20 +131,19 @@ public class InputMGR : MonoBehaviour
     private void FirstPlacing()
     {
         boxPlaced = Instantiate(selectedBox);
-        boxPlaced.transform.position = new Vector2(-4.5f,4);
+        boxPlaced.name = "BoxPlaced";
+        boxPlaced.transform.parent = factory.transform;
+        boxPlaced.transform.position = new Vector2(-4.5f, 4);
         boxPlaced.GetComponent<SpriteRenderer>().color = Color.white;
 
-        boxAtDropPoint = Instantiate(selectedBox);
-        boxAtDropPoint.transform.position = new Vector2(boxPlaced.transform.position.x,0);
-        boxAtDropPoint.GetComponent<SpriteRenderer>().color = Color.white;
 
 
 
         boxPlaced.SetActive(true);
-        boxAtDropPoint.SetActive(true);
 
         isFirstPlacing = false;
     }
+
     private void Placing()
     {
         float hInput = Input.GetAxisRaw("Horizontal");
@@ -166,7 +165,6 @@ public class InputMGR : MonoBehaviour
         if (CanMove(hInput))
         {
             boxPlaced.transform.position += new Vector3(hInput * speed, 0);
-            boxAtDropPoint.transform.position += new Vector3(hInput * speed, 0);
 
         }
         else
