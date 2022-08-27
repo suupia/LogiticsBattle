@@ -20,6 +20,9 @@ public class BattleMGR : MonoBehaviour
 
     private void Update()
     {
+        if (GameManager.instance.state != GameManager.State.Battling) return;
+
+
         if (Input.GetKeyDown(KeyCode.R))
         {
             LaunchingBox();
@@ -33,4 +36,6 @@ public class BattleMGR : MonoBehaviour
             player1fcty.transform.GetChild(i).gameObject.GetComponent<Rigidbody2D>().AddForce(Vector2.right * amount,ForceMode2D.Impulse);
         }
     }
+
+
 }

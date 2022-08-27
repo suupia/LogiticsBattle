@@ -6,10 +6,12 @@ public class InputMGR : MonoBehaviour
 {
     EditingMGR editingMGR;
 
+    //全体
+    [SerializeField] GameObject ground;
+
     //Selecting
     GameObject selectedBox;
-    [SerializeField]int selectedIndex; //デバッグようにserialize
-    List<int> placedIndexes; //Placeした箱のインデックスを保持しておく
+    [SerializeField] int selectedIndex; //デバッグようにserialize
     [SerializeField] int listIndex;
     List<int> notSelectedIndexes; //まだ選ばれていない箱のインデックス
 
@@ -49,14 +51,17 @@ public class InputMGR : MonoBehaviour
 
         editingMGR = GameManager.instance.editingMGR;
         selectedIndex = 0;
-        placedIndexes = new List<int>();
         notSelectedIndexes = new List<int>();
-        for(int i = 0; i < editingMGR.GetBoxFromWarehouse().Length; i++)
+        for (int i = 0; i < editingMGR.GetBoxFromWarehouse().Length; i++)
         {
             notSelectedIndexes.Add(i);
         }
         listIndex = 0;
-        SelectingBoxByIndex(0,0);
+
+        ChangeBoxColor();
+
+        //Groundの摩擦をつける
+        SwitchFriction(true);
     }
 
     private void Update()
@@ -81,6 +86,8 @@ public class InputMGR : MonoBehaviour
         }
         else if (_step == Step.Finish)
         {
+            //Groundの摩擦を0にする
+            SwitchFriction(false);
             GameManager.instance.Battling();
         }
         else
@@ -89,7 +96,7 @@ public class InputMGR : MonoBehaviour
         }
 
         //デバッグ
-        if(Input.GetKeyDown(KeyCode.Alpha0)) Debug.LogWarning($"{string.Join(",", placedIndexes)}");
+        //if(Input.GetKeyDown(KeyCode.Alpha0)) Debug.LogWarning($"{string.Join(",", placedIndexes)}");
         if (Input.GetKeyDown(KeyCode.Alpha1)) Debug.LogWarning($"{string.Join(",", notSelectedIndexes)}");
 
 
@@ -108,16 +115,17 @@ public class InputMGR : MonoBehaviour
         {
             Debug.Log($"Selectingにおいて、右キーが押されました");
 
-            int preIndex = listIndex;
-
             listIndex++;
 
-            if(listIndex >= notSelectedIndexes.Count)
+            if (listIndex >= notSelectedIndexes.Count)
             {
                 listIndex = 0;
             }
 
-            SelectingBoxByIndex(preIndex,notSelectedIndexes[listIndex]);
+            selectedBox = editingMGR.GetBoxFromWarehouse()[notSelectedIndexes[listIndex]];
+
+            ChangeBoxColor();
+
         }
 
         //左
@@ -125,16 +133,16 @@ public class InputMGR : MonoBehaviour
         {
             Debug.Log($"Selectingにおいて、左キーが押されました");
 
-            int preIndex = listIndex;
-
             listIndex--;
 
             if (listIndex <= -1)
             {
-                listIndex = notSelectedIndexes.Count-1;
+                listIndex = notSelectedIndexes.Count - 1;
             }
 
-            SelectingBoxByIndex(preIndex,notSelectedIndexes[listIndex]);
+            selectedBox = editingMGR.GetBoxFromWarehouse()[notSelectedIndexes[listIndex]];
+            ChangeBoxColor();
+
         }
 
         //決定
@@ -147,30 +155,28 @@ public class InputMGR : MonoBehaviour
 
 
     }
-
-    private void SelectingBoxByIndex(int preIndex, int postIndex)
+    private void ChangeBoxColor()
     {
-        if (isFirstSelectingBoxByIndex)
+        //Debug.Log($"ChangeBoxColorを実行します");
+        GameObject[] warehouse = editingMGR.GetBoxFromWarehouse();
+        for (int i = 0; i < warehouse.Length; i++)
         {
-            selectedBox = editingMGR.GetBoxFromWarehouse()[postIndex];
-            selectedBox.GetComponent<SpriteRenderer>().color = Color.green;
-            isFirstSelectingBoxByIndex = false;
-        }
-        else
-        {
-            if (notSelectedIndexes.Contains(preIndex))
+            //Debug.Log($"warehouse.Length:{warehouse.Length}, listIndex:{listIndex}");
+            if (notSelectedIndexes.Count !=0 && i == notSelectedIndexes[listIndex]) //リストの要素があることの確認が必要
             {
-                selectedBox.GetComponent<SpriteRenderer>().color = Color.white;
+                warehouse[i].GetComponent<SpriteRenderer>().color = Color.green;
+            }
+            else if (notSelectedIndexes.Contains(i))
+            {
+                warehouse[i].GetComponent<SpriteRenderer>().color = Color.white;
             }
             else
             {
-                selectedBox.GetComponent<SpriteRenderer>().color = Color.gray;
+                warehouse[i].GetComponent<SpriteRenderer>().color = Color.gray;
             }
-            selectedBox = editingMGR.GetBoxFromWarehouse()[postIndex];
-            selectedBox.GetComponent<SpriteRenderer>().color = Color.green;
+
         }
     }
-
 
     //Moving
     private void FirstMoving()
@@ -237,10 +243,10 @@ public class InputMGR : MonoBehaviour
     private void Placing()
     {
         selectedBox = editingMGR.GetBoxFromWarehouse()[notSelectedIndexes[listIndex]];
-        selectedBox.GetComponent<SpriteRenderer>().color = Color.gray;
         notSelectedIndexes.Remove(notSelectedIndexes[listIndex]);
+        ChangeBoxColor();
 
-        if(notSelectedIndexes.Count == 0)
+        if (notSelectedIndexes.Count == 0)
         {
             Debug.Log($"すべての箱を配置し終わりました");
             _step = Step.Finish;
@@ -252,13 +258,23 @@ public class InputMGR : MonoBehaviour
             isFirstPlacing = true;
         }
 
-        
+
     }
 
-    private void PlacingBoxByIndex(int index)
+
+
+    private void SwitchFriction(bool isOn)
     {
+        if (isOn)
+        {
+            ground.GetComponent<BoxCollider2D>().sharedMaterial.friction = 1f;
+            Debug.Log($"OnFriction value:{ground.GetComponent<BoxCollider2D>().sharedMaterial.friction}");
+        }
+        else
+        {
+            ground.GetComponent<BoxCollider2D>().sharedMaterial.friction = 0;
+            Debug.Log($"OffFriction value:{ground.GetComponent<BoxCollider2D>().sharedMaterial.friction}");
 
-
-        
+        }
     }
 }
