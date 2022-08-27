@@ -79,6 +79,10 @@ public class InputMGR : MonoBehaviour
             if (isFirstPlacing) FristPlacing();
             Placing();
         }
+        else if (_step == Step.Finish)
+        {
+            GameManager.instance.Battling();
+        }
         else
         {
             Debug.LogError($"InputMGRのstepが予期せぬ値になっています step:{step}");
@@ -240,9 +244,14 @@ public class InputMGR : MonoBehaviour
         {
             Debug.Log($"すべての箱を配置し終わりました");
             _step = Step.Finish;
+            isFirstPlacing = true;
         }
-        _step = Step.Selecting;
-        isFirstPlacing = true;
+        else
+        {
+            _step = Step.Selecting;
+            isFirstPlacing = true;
+        }
+
         
     }
 

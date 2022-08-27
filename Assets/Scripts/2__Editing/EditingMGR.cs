@@ -5,6 +5,7 @@ using UnityEngine;
 public class EditingMGR : MonoBehaviour
 {
     [SerializeField] public InputMGR inputMGR;
+    [SerializeField] public BattleMGR battleMGR;
 
 
     public bool isInitialized = false;

@@ -18,7 +18,7 @@ public class GameManager : MonoBehaviour
     {
         Title,
         Editing,
-        Battleing,
+        Battling,
         Result
     }
     [SerializeField] private State _state; //デバッグ用
@@ -55,5 +55,11 @@ public class GameManager : MonoBehaviour
     {
         __Editing.SetActive(true);
         _state = State.Editing;
+    }
+
+    public void Battling()
+    {
+        __Battleing.SetActive(true );
+        _state = State.Battling;
     }
 }
