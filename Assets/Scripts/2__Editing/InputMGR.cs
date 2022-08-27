@@ -12,8 +12,9 @@ public class InputMGR : MonoBehaviour
 
 
     //Placing
-    [SerializeField] GameObject boxPlaced; //Factoryにおいて操作するゲームオブジェクト
-    [SerializeField] GameObject boxAtDropPoint; //FactoryにおいてboxPlacedの落下地点を表示するゲームオブジェクト
+    [SerializeField] GameObject factory;
+    GameObject boxPlaced; //Factoryにおいて操作するゲームオブジェクト
+    GameObject boxAtDropPoint; //FactoryにおいてboxPlacedの落下地点を表示するゲームオブジェクト
     [SerializeField] float speed; //箱の移動の速さ
 
     //初期化フラグ
@@ -131,12 +132,17 @@ public class InputMGR : MonoBehaviour
     private void FirstPlacing()
     {
         boxPlaced = Instantiate(selectedBox);
+        boxPlaced.name = "BoxPlaced";
+        boxPlaced.transform.parent = factory.transform;
         boxPlaced.transform.position = new Vector2(-4.5f,4);
         boxPlaced.GetComponent<SpriteRenderer>().color = Color.white;
 
         boxAtDropPoint = Instantiate(selectedBox);
+        boxAtDropPoint.name = "BoxAtDropPoint";
+        boxAtDropPoint.transform.parent = factory.transform;
         boxAtDropPoint.transform.position = new Vector2(boxPlaced.transform.position.x,0);
         boxAtDropPoint.GetComponent<SpriteRenderer>().color = Color.white;
+        boxAtDropPoint.AddComponent<DropMGR>();
 
 
 
@@ -145,6 +151,7 @@ public class InputMGR : MonoBehaviour
 
         isFirstPlacing = false;
     }
+
     private void Placing()
     {
         float hInput = Input.GetAxisRaw("Horizontal");
