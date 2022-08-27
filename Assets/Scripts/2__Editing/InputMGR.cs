@@ -119,6 +119,7 @@ public class InputMGR : MonoBehaviour
         {
             Debug.Log($"Selectingにおいて、決定キーが押されました");
             _step = Step.Moving;
+            isFirstSelecting = true;
         }
 
 
@@ -173,6 +174,7 @@ public class InputMGR : MonoBehaviour
         {
             Debug.Log($"Movingにおいて、決定キーが押されました");
             _step = Step.Placing;
+            isFirstMoving = true;
         }
 
     }
@@ -206,5 +208,6 @@ public class InputMGR : MonoBehaviour
     {
         //入力を受け付けない
         _step = Step.Selecting;
+        isFirstPlacing = true;
     }
 }
