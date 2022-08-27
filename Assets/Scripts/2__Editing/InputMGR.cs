@@ -11,20 +11,25 @@ public class InputMGR : MonoBehaviour
     int selectedIndex;
 
 
-    //Placing
+    //Moving
     [SerializeField] GameObject factory;
     GameObject boxPlaced; //Factoryにおいて操作するゲームオブジェクト
     [SerializeField] float speed; //箱の移動の速さ
 
+    //Placing
+
     //初期化フラグ
     bool isFirstSelecting = true;
+    bool isFirstMoving = true;
     bool isFirstPlacing = true;
     bool isFirstSelectingBoxByIndex = true;
 
     public enum Step
     {
         Selecting,
+        Moving,
         Placing
+
     }
     [SerializeField] private Step _step; //デバッグ用
 
@@ -52,11 +57,16 @@ public class InputMGR : MonoBehaviour
             if (isFirstSelecting) FirstSelecting();
             Selecting();
         }
+        else if (_step == Step.Moving)
+        {
+            if (isFirstMoving) FirstMoving();
+            Moving();
+
+        }
         else if (_step == Step.Placing)
         {
-            if (isFirstPlacing) FirstPlacing();
+            if (isFirstPlacing) FristPlacing();
             Placing();
-
         }
         else
         {
@@ -64,6 +74,8 @@ public class InputMGR : MonoBehaviour
         }
 
     }
+
+    //Selecting
     private void FirstSelecting()
     {
         isFirstSelecting = false;
@@ -106,7 +118,7 @@ public class InputMGR : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.E))
         {
             Debug.Log($"Selectingにおいて、決定キーが押されました");
-            _step = Step.Placing;
+            _step = Step.Moving;
         }
 
 
@@ -128,7 +140,9 @@ public class InputMGR : MonoBehaviour
         }
     }
 
-    private void FirstPlacing()
+
+    //Moving
+    private void FirstMoving()
     {
         boxPlaced = Instantiate(selectedBox);
         boxPlaced.name = "BoxPlaced";
@@ -137,26 +151,29 @@ public class InputMGR : MonoBehaviour
         boxPlaced.GetComponent<SpriteRenderer>().color = Color.white;
 
 
-
-
         boxPlaced.SetActive(true);
 
-        isFirstPlacing = false;
+        isFirstMoving = false;
     }
 
-    private void Placing()
+    private void Moving()
     {
         float hInput = Input.GetAxisRaw("Horizontal");
 
         //移動
         if (hInput != 0)
         {
-            Debug.Log("Placingにおいて、移動キーが入力されました。");
+            Debug.Log("Movingにおいて、移動キーが入力されました。");
 
             MoveBox(hInput);
         }
 
         //配置
+        if (Input.GetKeyDown(KeyCode.E))
+        {
+            Debug.Log($"Movingにおいて、決定キーが押されました");
+            _step = Step.Placing;
+        }
 
     }
 
@@ -180,9 +197,14 @@ public class InputMGR : MonoBehaviour
     }
 
 
-
-    private void PlaceBox()
+    //Placing
+    private void FristPlacing()
     {
-
+        boxPlaced.GetComponent<Rigidbody2D>().bodyType = RigidbodyType2D.Dynamic;
+    }
+    private void Placing()
+    {
+        //入力を受け付けない
+        _step = Step.Selecting;
     }
 }
