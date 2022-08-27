@@ -11,6 +11,10 @@ public class BattleMGR : MonoBehaviour
 
     float amount = 30;
 
+    float waitTime = 2;
+
+    InputMGR.PlayerNum winPNum;
+
     public void Init()
     {
         Debug.Log($"BattleMGRのInit()を実行します");
@@ -35,7 +39,61 @@ public class BattleMGR : MonoBehaviour
         {
             player1fcty.transform.GetChild(i).gameObject.GetComponent<Rigidbody2D>().AddForce(Vector2.right * amount,ForceMode2D.Impulse);
         }
+
+        for (int i = 0; i < player2fcty.transform.childCount; i++)
+        {
+            player2fcty.transform.GetChild(i).gameObject.GetComponent<Rigidbody2D>().AddForce(Vector2.left * amount, ForceMode2D.Impulse);
+        }
+
+        StartCoroutine(Wait());
     }
 
+    IEnumerator Wait()
+    {
+        yield return new WaitForSeconds(waitTime);
 
+        editingMGR.SwitchFriction(true);
+    }
+
+    private void Judge()
+    {
+        int p1Point =0;
+        int p2Point=0;
+
+        for (int i = 0; i < player1fcty.transform.childCount; i++)
+        {
+            if(player1fcty.transform.GetChild(i).gameObject.transform.position.x > 0)
+            {
+                p1Point++;
+            }else if(player1fcty.transform.GetChild(i).gameObject.transform.position.x < 0)
+            {
+                p2Point++;
+            }
+            else
+            {
+                //とりあえず
+                p1Point++;
+            }
+            
+        }
+
+        for (int i = 0; i < player2fcty.transform.childCount; i++)
+        {
+            if (player2fcty.transform.GetChild(i).gameObject.transform.position.x > 0)
+            {
+                p1Point++;
+            }
+            else if (player1fcty.transform.GetChild(i).gameObject.transform.position.x < 0)
+            {
+                p2Point++;
+            }
+            else
+            {
+                //とりあえず
+                p1Point++;
+            }
+        }
+
+
+    }
 }

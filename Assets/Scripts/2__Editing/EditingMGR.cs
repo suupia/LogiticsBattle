@@ -18,6 +18,7 @@ public class EditingMGR : MonoBehaviour
     [SerializeField] GameObject boxPrefab2;
     [SerializeField] GameObject boxPrefab3;
 
+    [SerializeField]GameObject ground;
 
     GameObject[] p1warehouses;
     GameObject[] p2warehouses;
@@ -73,6 +74,20 @@ public class EditingMGR : MonoBehaviour
     }
 
 
+    public void SwitchFriction(bool isOn)
+    {
+        if (isOn)
+        {
+            ground.GetComponent<BoxCollider2D>().sharedMaterial.friction = 1f;
+            Debug.Log($"OnFriction value:{ground.GetComponent<BoxCollider2D>().sharedMaterial.friction}");
+        }
+        else
+        {
+            ground.GetComponent<BoxCollider2D>().sharedMaterial.friction = 0;
+            Debug.Log($"OffFriction value:{ground.GetComponent<BoxCollider2D>().sharedMaterial.friction}");
+
+        }
+    }
 
 
     //Getter

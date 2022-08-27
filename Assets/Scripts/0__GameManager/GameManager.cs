@@ -13,6 +13,8 @@ public class GameManager : MonoBehaviour
 
     [SerializeField] public EditingMGR editingMGR;
 
+    bool isP1Finished;
+    bool isP2Finished;
 
     public enum State
     {
@@ -53,6 +55,8 @@ public class GameManager : MonoBehaviour
 
     public void Editing()
     {
+        isP1Finished = false;
+        isP2Finished = false;
         __Editing.SetActive(true);
         _state = State.Editing;
     }
@@ -61,5 +65,26 @@ public class GameManager : MonoBehaviour
     {
         __Battleing.SetActive(true );
         _state = State.Battling;
+    }
+
+    public void FinishEditing(InputMGR.PlayerNum pNum)
+    {
+        if(pNum == InputMGR.PlayerNum.p1)
+        {
+            isP1Finished = true;
+        }else if(pNum == InputMGR.PlayerNum.p2)
+        {
+            isP2Finished = true;
+        }
+        else
+        {
+            Debug.LogError($"FinishEditingのpNumが予期せぬ値になっています pNum:{pNum}");
+        }
+
+        if (isP1Finished && isP2Finished)
+        {
+            editingMGR.SwitchFriction(false);
+            Battling();
+        }
     }
 }

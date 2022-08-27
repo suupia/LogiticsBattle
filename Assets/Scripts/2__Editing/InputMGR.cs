@@ -14,7 +14,6 @@ public class InputMGR : MonoBehaviour
     }
 
     //全体
-    [SerializeField] GameObject ground;
     GameObject[] boxFromWarehouse;
 
     //Selecting
@@ -80,7 +79,7 @@ public class InputMGR : MonoBehaviour
         ChangeBoxColor();
 
         //Groundの摩擦をつける
-        SwitchFriction(true);
+        editingMGR.SwitchFriction(true);
     }
 
     private void Update()
@@ -105,9 +104,7 @@ public class InputMGR : MonoBehaviour
         }
         else if (_step == Step.Finish)
         {
-            //Groundの摩擦を0にする
-            SwitchFriction(false);
-            GameManager.instance.Battling();
+            GameManager.instance.FinishEditing(pNum);
         }
         else
         {
@@ -126,6 +123,8 @@ public class InputMGR : MonoBehaviour
     private void FirstSelecting()
     {
         isFirstSelecting = false;
+        selectedBox = boxFromWarehouse[notSelectedIndexes[listIndex]];
+
     }
     private void Selecting()
     {
@@ -307,20 +306,20 @@ public class InputMGR : MonoBehaviour
 
 
 
-    private void SwitchFriction(bool isOn)
-    {
-        if (isOn)
-        {
-            ground.GetComponent<BoxCollider2D>().sharedMaterial.friction = 1f;
-            Debug.Log($"OnFriction value:{ground.GetComponent<BoxCollider2D>().sharedMaterial.friction}");
-        }
-        else
-        {
-            ground.GetComponent<BoxCollider2D>().sharedMaterial.friction = 0;
-            Debug.Log($"OffFriction value:{ground.GetComponent<BoxCollider2D>().sharedMaterial.friction}");
+    //public void SwitchFriction(bool isOn)
+    //{
+    //    if (isOn)
+    //    {
+    //        ground.GetComponent<BoxCollider2D>().sharedMaterial.friction = 1f;
+    //        Debug.Log($"OnFriction value:{ground.GetComponent<BoxCollider2D>().sharedMaterial.friction}");
+    //    }
+    //    else
+    //    {
+    //        ground.GetComponent<BoxCollider2D>().sharedMaterial.friction = 0;
+    //        Debug.Log($"OffFriction value:{ground.GetComponent<BoxCollider2D>().sharedMaterial.friction}");
 
-        }
-    }
+    //    }
+    //}
 
 
     //プレイヤーに依ってキーが異なる
