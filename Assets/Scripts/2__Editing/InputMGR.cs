@@ -6,12 +6,19 @@ public class InputMGR : MonoBehaviour
 {
     EditingMGR editingMGR;
 
+    [SerializeField] PlayerNum pNum;
+
+    public enum PlayerNum
+    {
+        p1,p2
+    }
+
     //全体
     [SerializeField] GameObject ground;
+    GameObject[] boxFromWarehouse;
 
     //Selecting
     GameObject selectedBox;
-    [SerializeField] int selectedIndex; //デバッグようにserialize
     [SerializeField] int listIndex;
     List<int> notSelectedIndexes; //まだ選ばれていない箱のインデックス
 
@@ -50,9 +57,21 @@ public class InputMGR : MonoBehaviour
         Debug.Log($"InputMGRのInit()を実行します");
 
         editingMGR = GameManager.instance.editingMGR;
-        selectedIndex = 0;
         notSelectedIndexes = new List<int>();
-        for (int i = 0; i < editingMGR.GetBoxFromWarehouse().Length; i++)
+        if (pNum == PlayerNum.p1)
+        {
+            boxFromWarehouse = editingMGR.GetBoxFromP1Warehouse();
+        }
+        else if (pNum == PlayerNum.p2)
+        {
+            boxFromWarehouse = editingMGR.GetBoxFromP2Warehouse();
+        }
+        else
+        {
+            Debug.LogError($"pNumが予期せぬ値になっています pNum:{pNum}");
+        }
+
+        for (int i = 0; i < boxFromWarehouse.Length; i++)
         {
             notSelectedIndexes.Add(i);
         }
@@ -111,7 +130,7 @@ public class InputMGR : MonoBehaviour
     private void Selecting()
     {
         //右
-        if (Input.GetKeyDown(KeyCode.D))
+        if (Input.GetKeyDown(RightKeyCode()))
         {
             Debug.Log($"Selectingにおいて、右キーが押されました");
 
@@ -122,14 +141,14 @@ public class InputMGR : MonoBehaviour
                 listIndex = 0;
             }
 
-            selectedBox = editingMGR.GetBoxFromWarehouse()[notSelectedIndexes[listIndex]];
+            selectedBox = boxFromWarehouse[notSelectedIndexes[listIndex]];
 
             ChangeBoxColor();
 
         }
 
         //左
-        if (Input.GetKeyDown(KeyCode.A))
+        if (Input.GetKeyDown(LeftKeyCode()))
         {
             Debug.Log($"Selectingにおいて、左キーが押されました");
 
@@ -140,13 +159,13 @@ public class InputMGR : MonoBehaviour
                 listIndex = notSelectedIndexes.Count - 1;
             }
 
-            selectedBox = editingMGR.GetBoxFromWarehouse()[notSelectedIndexes[listIndex]];
+            selectedBox = boxFromWarehouse[notSelectedIndexes[listIndex]];
             ChangeBoxColor();
 
         }
 
         //決定
-        if (Input.GetKeyDown(KeyCode.E))
+        if (Input.GetKeyDown(DecisionKeyCode()))
         {
             Debug.Log($"Selectingにおいて、決定キーが押されました");
             _step = Step.Moving;
@@ -158,21 +177,20 @@ public class InputMGR : MonoBehaviour
     private void ChangeBoxColor()
     {
         //Debug.Log($"ChangeBoxColorを実行します");
-        GameObject[] warehouse = editingMGR.GetBoxFromWarehouse();
-        for (int i = 0; i < warehouse.Length; i++)
+        for (int i = 0; i < boxFromWarehouse.Length; i++)
         {
-            Debug.Log($"warehouse.Length:{warehouse.Length}, listIndex:{listIndex}");
-            if (notSelectedIndexes.Count !=0 && i == notSelectedIndexes[listIndex]) //リストの要素があることの確認が必要
+            Debug.Log($"boxFromWarehouse.Length:{boxFromWarehouse.Length}, listIndex:{listIndex}");
+            if (notSelectedIndexes.Count != 0 && i == notSelectedIndexes[listIndex]) //リストの要素があることの確認が必要
             {
-                warehouse[i].GetComponent<SpriteRenderer>().color = Color.green;
+                boxFromWarehouse[i].GetComponent<SpriteRenderer>().color = Color.green;
             }
             else if (notSelectedIndexes.Contains(i))
             {
-                warehouse[i].GetComponent<SpriteRenderer>().color = Color.white;
+                boxFromWarehouse[i].GetComponent<SpriteRenderer>().color = Color.white;
             }
             else
             {
-                warehouse[i].GetComponent<SpriteRenderer>().color = Color.gray;
+                boxFromWarehouse[i].GetComponent<SpriteRenderer>().color = Color.gray;
             }
 
         }
@@ -184,7 +202,19 @@ public class InputMGR : MonoBehaviour
         boxPlaced = Instantiate(selectedBox);
         boxPlaced.name = "BoxPlaced";
         boxPlaced.transform.parent = factory.transform;
-        boxPlaced.transform.position = new Vector2(-4.5f, 4);
+        if (pNum == PlayerNum.p1)
+        {
+            boxPlaced.transform.position = new Vector2(-4.5f, 4);
+
+        }
+        else if (pNum == PlayerNum.p2)
+        {
+            boxPlaced.transform.position = new Vector2(-4.5f + editingMGR.GetHalfOfScreen(), 4);
+        }
+        else
+        {
+            Debug.LogError($"pNumが予期せぬ値になっています pNum:{pNum}");
+        }
         boxPlaced.GetComponent<SpriteRenderer>().color = Color.white;
 
 
@@ -195,7 +225,20 @@ public class InputMGR : MonoBehaviour
 
     private void Moving()
     {
-        float hInput = Input.GetAxisRaw("Horizontal");
+        float hInput = 0;
+
+        if (Input.GetKey(RightKeyCode())) //右
+        {
+            hInput = 1;
+        }
+        else if (Input.GetKey(LeftKeyCode())) //左
+        {
+            hInput = -1;
+        }
+        else
+        {
+            hInput = 0;
+        }
 
         //移動
         if (hInput != 0)
@@ -206,7 +249,7 @@ public class InputMGR : MonoBehaviour
         }
 
         //配置
-        if (Input.GetKeyDown(KeyCode.E))
+        if (Input.GetKeyDown(DecisionKeyCode()))
         {
             Debug.Log($"Movingにおいて、決定キーが押されました");
             _step = Step.Placing;
@@ -242,7 +285,7 @@ public class InputMGR : MonoBehaviour
     }
     private void Placing()
     {
-        selectedBox = editingMGR.GetBoxFromWarehouse()[notSelectedIndexes[listIndex]];
+        selectedBox = boxFromWarehouse[notSelectedIndexes[listIndex]];
         notSelectedIndexes.Remove(notSelectedIndexes[listIndex]);
         if (listIndex == notSelectedIndexes.Count) listIndex--; //要素の削除に合わせてイテレータの位置を変える
         ChangeBoxColor();
@@ -276,6 +319,59 @@ public class InputMGR : MonoBehaviour
             ground.GetComponent<BoxCollider2D>().sharedMaterial.friction = 0;
             Debug.Log($"OffFriction value:{ground.GetComponent<BoxCollider2D>().sharedMaterial.friction}");
 
+        }
+    }
+
+
+    //プレイヤーに依ってキーが異なる
+    private KeyCode LeftKeyCode()
+    {
+        if (pNum == PlayerNum.p1)
+        {
+            return KeyCode.A;
+        }
+        else if (pNum == PlayerNum.p2)
+        {
+            return KeyCode.J;
+        }
+        else
+        {
+            Debug.LogError($"pNumが予期せぬ値になっています pNum:{pNum}");
+            return KeyCode.Escape;
+        }
+    }
+
+    private KeyCode RightKeyCode()
+    {
+        if (pNum == PlayerNum.p1)
+        {
+            return KeyCode.D;
+        }
+        else if (pNum == PlayerNum.p2)
+        {
+            return KeyCode.L;
+        }
+        else
+        {
+            Debug.LogError($"pNumが予期せぬ値になっています pNum:{pNum}");
+            return KeyCode.Escape;
+        }
+    }
+
+    private KeyCode DecisionKeyCode()
+    {
+        if (pNum == PlayerNum.p1)
+        {
+            return KeyCode.E;
+        }
+        else if (pNum == PlayerNum.p2)
+        {
+            return KeyCode.O;
+        }
+        else
+        {
+            Debug.LogError($"pNumが予期せぬ値になっています pNum:{pNum}");
+            return KeyCode.Escape;
         }
     }
 }

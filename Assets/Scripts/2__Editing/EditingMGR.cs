@@ -4,7 +4,9 @@ using UnityEngine;
 
 public class EditingMGR : MonoBehaviour
 {
-    [SerializeField] public InputMGR inputMGR;
+    [SerializeField] public InputMGR p1InputMGR;
+    [SerializeField] public InputMGR p2InputMGR;
+
     [SerializeField] public BattleMGR battleMGR;
 
 
@@ -12,10 +14,15 @@ public class EditingMGR : MonoBehaviour
 
     [SerializeField] GameObject boxParentInWarehouse;
 
-    [SerializeField] GameObject heavy_1x1;
-    [SerializeField] GameObject light_1x1;
+    [SerializeField] GameObject boxPrefab1;
+    [SerializeField] GameObject boxPrefab2;
+    [SerializeField] GameObject boxPrefab3;
 
-    GameObject[] warehouses;
+
+    GameObject[] p1warehouses;
+    GameObject[] p2warehouses;
+
+    float halfOfScreen = 9;
 
     private void OnEnable()
     {
@@ -24,12 +31,18 @@ public class EditingMGR : MonoBehaviour
     public void Init()
     {
         //エクセルから倉庫にある箱の数を読み込む
-        warehouses = new GameObject[3];
+        p1warehouses = new GameObject[3];
+        p2warehouses = new GameObject[3];
+
 
         //エクセルから倉庫にある箱の種類を読み込み、インスタンス化する（しないとプレハブを直接参照することになってしまう）
-        warehouses[0] = Instantiate(heavy_1x1, boxParentInWarehouse.transform);
-        warehouses[1] = Instantiate(light_1x1, boxParentInWarehouse.transform);
-        warehouses[2] = Instantiate(light_1x1, boxParentInWarehouse.transform);
+        p1warehouses[0] = Instantiate(boxPrefab1, boxParentInWarehouse.transform);
+        p1warehouses[1] = Instantiate(boxPrefab2, boxParentInWarehouse.transform);
+        p1warehouses[2] = Instantiate(boxPrefab3, boxParentInWarehouse.transform);
+
+        p2warehouses[0] = Instantiate(boxPrefab1, boxParentInWarehouse.transform);
+        p2warehouses[1] = Instantiate(boxPrefab2, boxParentInWarehouse.transform);
+        p2warehouses[2] = Instantiate(boxPrefab3, boxParentInWarehouse.transform);
 
         //倉庫に表示する
         DisplayingBoxesInWarehouse(0);
@@ -37,7 +50,9 @@ public class EditingMGR : MonoBehaviour
         DisplayingBoxesInWarehouse(2);
 
         //アタッチされているスクリプトの初期化
-        inputMGR.Init();
+        p1InputMGR.Init();
+        p2InputMGR.Init();
+
 
         isInitialized = true;
 
@@ -49,9 +64,11 @@ public class EditingMGR : MonoBehaviour
         Vector2 anchorPos = new Vector2(-8, -4);
         int hMargin = 2;
 
-        //GameObject boxInWarehouse = Instantiate(warehouses[index] ,boxParentInWarehouse.transform);
-        warehouses[index].transform.localPosition = anchorPos + new Vector2(hMargin * index, 0);
-        //primitiveObject.transform.localScale = localScale;
+        //Player1
+        p1warehouses[index].transform.localPosition = anchorPos + new Vector2(hMargin * index, 0);
+
+        //Player2
+        p2warehouses[index].transform.localPosition = new Vector2(halfOfScreen,0) + anchorPos + new Vector2(hMargin * index, 0);
 
     }
 
@@ -59,9 +76,16 @@ public class EditingMGR : MonoBehaviour
 
 
     //Getter
-    public GameObject[] GetBoxFromWarehouse()
+    public GameObject[] GetBoxFromP1Warehouse()
     {
-        return warehouses;
+        return p1warehouses;
     }
-
+    public GameObject[] GetBoxFromP2Warehouse()
+    {
+        return p2warehouses;
+    }
+    public float GetHalfOfScreen()
+    {
+        return halfOfScreen;
+    }
 }

@@ -9,7 +9,7 @@ public class BattleMGR : MonoBehaviour
     [SerializeField] GameObject player1fcty;
     [SerializeField] GameObject player2fcty;
 
-    float amount = 50;
+    float amount = 30;
 
     public void Init()
     {
