@@ -203,8 +203,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 613969077809a2e42aab03383fef65b1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  playerNum: 1
-  ground: {fileID: 848357261}
+  pNum: 0
   listIndex: 0
   factory: {fileID: 690576171}
   speed: 0.05
@@ -570,13 +569,12 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 668169509}
-  m_Enabled: 0
+  m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 613969077809a2e42aab03383fef65b1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  playerNum: 2
-  ground: {fileID: 848357261}
+  pNum: 1
   listIndex: 0
   factory: {fileID: 586603431}
   speed: 0.05
@@ -752,13 +750,13 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 852111398}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 1085256542}
-  m_RootOrder: 2
+  m_Father: {fileID: 2031956488}
+  m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &852111400
 MonoBehaviour:
@@ -773,7 +771,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   player1fcty: {fileID: 690576171}
-  player2fcty: {fileID: 0}
+  player2fcty: {fileID: 586603431}
 --- !u!1 &1051771167
 GameObject:
   m_ObjectHideFlags: 0
@@ -837,7 +835,6 @@ Transform:
   m_Children:
   - {fileID: 110406583}
   - {fileID: 668169510}
-  - {fileID: 852111399}
   m_Father: {fileID: 88383592}
   m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -853,13 +850,15 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d7f025107a5fd314697fb79fae08547b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  inputMGR: {fileID: 110406584}
+  p1InputMGR: {fileID: 110406584}
+  p2InputMGR: {fileID: 668169511}
   battleMGR: {fileID: 852111400}
   isInitialized: 0
   boxParentInWarehouse: {fileID: 255985353}
   boxPrefab1: {fileID: 2486844148104153649, guid: ab61d47fc6b59534cb594a0550f0350f, type: 3}
   boxPrefab2: {fileID: 1759758985267349182, guid: 00b525e77d764a1448046c65ef42f405, type: 3}
   boxPrefab3: {fileID: 7993217806140186629, guid: 05c0f90c3ddf90c49a4be156dbe1fa11, type: 3}
+  ground: {fileID: 848357261}
 --- !u!1 &1113758867
 GameObject:
   m_ObjectHideFlags: 0
@@ -1291,7 +1290,8 @@ Transform:
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
-  m_Children: []
+  m_Children:
+  - {fileID: 852111399}
   m_Father: {fileID: 0}
   m_RootOrder: 5
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}

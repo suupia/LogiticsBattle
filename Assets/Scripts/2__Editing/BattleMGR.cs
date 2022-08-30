@@ -53,6 +53,8 @@ public class BattleMGR : MonoBehaviour
         yield return new WaitForSeconds(waitTime);
 
         editingMGR.SwitchFriction(true);
+
+        Judge();
     }
 
     private void Judge()
@@ -92,6 +94,18 @@ public class BattleMGR : MonoBehaviour
                 //とりあえず
                 p1Point++;
             }
+        }
+
+        if (p1Point > p2Point)
+        {
+            Debug.Log("Player1 Wins !");
+        }else if(p1Point < p2Point)
+        {
+            Debug.Log("Player2 Wins !");
+        }
+        else
+        {
+            Debug.Log("Draw");
         }
 
 

@@ -53,6 +53,7 @@ public class EditingMGR : MonoBehaviour
         //アタッチされているスクリプトの初期化
         p1InputMGR.Init();
         p2InputMGR.Init();
+        battleMGR.Init();
 
 
         isInitialized = true;
