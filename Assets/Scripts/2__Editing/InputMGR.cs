@@ -26,6 +26,10 @@ public class InputMGR : MonoBehaviour
     [SerializeField] GameObject factory;
     GameObject boxPlaced; //Factoryにおいて操作するゲームオブジェクト
     [SerializeField] float speed; //箱の移動の速さ
+    float p1LeftEndPos = -7;
+    float p1RightEndPos = -1;
+    float p2LeftEndPos = 1;
+    float p2RightEndPos = 7;
 
     //Placing
 
@@ -178,7 +182,7 @@ public class InputMGR : MonoBehaviour
         //Debug.Log($"ChangeBoxColorを実行します");
         for (int i = 0; i < boxFromWarehouse.Length; i++)
         {
-            Debug.Log($"boxFromWarehouse.Length:{boxFromWarehouse.Length}, listIndex:{listIndex}");
+            //Debug.Log($"boxFromWarehouse.Length:{boxFromWarehouse.Length}, listIndex:{listIndex}");
             if (notSelectedIndexes.Count != 0 && i == notSelectedIndexes[listIndex]) //リストの要素があることの確認が必要
             {
                 boxFromWarehouse[i].GetComponent<SpriteRenderer>().color = Color.green;
@@ -247,6 +251,13 @@ public class InputMGR : MonoBehaviour
             MoveBox(hInput);
         }
 
+        //回転
+        if (Input.GetKeyDown(RotateKeyCode()))
+        {
+            RotateBox();
+        }
+
+
         //配置
         if (Input.GetKeyDown(DecisionKeyCode()))
         {
@@ -273,7 +284,45 @@ public class InputMGR : MonoBehaviour
 
     private bool CanMove(float hInput)
     {
-        return true;
+        if(pNum == PlayerNum.p1)
+        {
+            if (hInput <0 && boxPlaced.transform.position.x <= p1LeftEndPos)
+            {
+                return false;
+            }else if (hInput > 0 && boxPlaced.transform.position.x >= p1RightEndPos)
+            {
+                return false;
+            }
+            else
+            {
+                return true;
+            }
+        }else if(pNum == PlayerNum.p2)
+        {
+            if (hInput < 0 && boxPlaced.transform.position.x <= p2LeftEndPos)
+            {
+                return false;
+            }
+            else if (hInput > 0 && boxPlaced.transform.position.x >= p2RightEndPos)
+            {
+                return false;
+            }
+            else
+            {
+                return true;
+            }
+        }
+        else
+        {
+            Debug.LogError($"pNumが予期せぬ値になっています pNum:{pNum}");
+            return false;
+        }
+    }
+
+    private void RotateBox()
+    {
+        //反時計回りに90度回転
+        boxPlaced.transform.Rotate(new Vector3(0,0,90));
     }
 
 
@@ -356,7 +405,22 @@ public class InputMGR : MonoBehaviour
             return KeyCode.Escape;
         }
     }
-
+    private KeyCode RotateKeyCode()
+    {
+        if (pNum == PlayerNum.p1)
+        {
+            return KeyCode.Q;
+        }
+        else if (pNum == PlayerNum.p2)
+        {
+            return KeyCode.U;
+        }
+        else
+        {
+            Debug.LogError($"pNumが予期せぬ値になっています pNum:{pNum}");
+            return KeyCode.Escape;
+        }
+    }
     private KeyCode DecisionKeyCode()
     {
         if (pNum == PlayerNum.p1)

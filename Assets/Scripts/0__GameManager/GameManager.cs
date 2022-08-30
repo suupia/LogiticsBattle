@@ -12,6 +12,7 @@ public class GameManager : MonoBehaviour
     [SerializeField] private GameObject __Result;
 
     [SerializeField] public EditingMGR editingMGR;
+    [SerializeField] public ResultMGR resultMGR;
 
     bool isP1Finished;
     bool isP2Finished;
@@ -65,6 +66,12 @@ public class GameManager : MonoBehaviour
     {
         __Battleing.SetActive(true );
         _state = State.Battling;
+    }
+
+    public void Result()
+    {
+        __Result.SetActive(true);
+        _state = State.Result;
     }
 
     public void FinishEditing(InputMGR.PlayerNum pNum)
