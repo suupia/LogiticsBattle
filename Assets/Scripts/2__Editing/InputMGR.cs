@@ -148,7 +148,6 @@ public class InputMGR : MonoBehaviour
         }
 
         //デバッグ
-        //if(Input.GetKeyDown(KeyCode.Alpha0)) Debug.LogWarning($"{string.Join(",", placedIndexes)}");
         if (Input.GetKeyDown(KeyCode.Alpha1)) Debug.LogWarning($"{string.Join(",", notSelectedIndexes)}");
 
 
@@ -366,10 +365,13 @@ public class InputMGR : MonoBehaviour
     //Placing
     private void FristPlacing()
     {
-        boxPlaced.GetComponent<Rigidbody2D>().bodyType = RigidbodyType2D.Dynamic;
     }
+
     private void Placing()
     {
+        boxPlaced.GetComponent<Rigidbody2D>().bodyType = RigidbodyType2D.Dynamic;
+        boxPlaced.GetComponent<Rigidbody2D>().mass = selectedBox.GetComponent<Box>().mass;
+
         selectedBox = boxFromWarehouse[notSelectedIndexes[listIndex]];
         notSelectedIndexes.Remove(notSelectedIndexes[listIndex]);
         if (listIndex == notSelectedIndexes.Count) listIndex--; //要素の削除に合わせてイテレータの位置を変える
