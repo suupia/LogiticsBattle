@@ -12,6 +12,8 @@ public class EditingMGR : MonoBehaviour
 
     public bool isInitialized = false;
 
+    bool isFristInit = true;
+
     [SerializeField] GameObject boxParentInWarehouse;
 
     [SerializeField] GameObject boxPrefab1;
@@ -25,12 +27,33 @@ public class EditingMGR : MonoBehaviour
 
     float halfOfScreen = 9;
 
+    //フラグ
+    bool isP1Finished;
+    bool isP2Finished;
+
     private void OnEnable()
     {
-        if (!isInitialized) Init();
+        EnableInit();
     }
-    public void Init()
+
+    private void OnDisable()
     {
+        DisableInit();
+    }
+    public void EnableInit()
+    {
+        Debug.Log($"EditingMGRのEnableInit()を実行します");
+
+        if (isFristInit)
+        {
+            //今はゲームで一回のみ処理する内容はない
+        }
+
+        //フラグの初期化
+        isP1Finished = false;
+        isP2Finished = false;
+
+
         //エクセルから倉庫にある箱の数を読み込む
         p1warehouses = new GameObject[3];
         p2warehouses = new GameObject[3];
@@ -53,11 +76,27 @@ public class EditingMGR : MonoBehaviour
         //アタッチされているスクリプトの初期化
         p1InputMGR.Init();
         p2InputMGR.Init();
-        battleMGR.Init();
 
+
+        //Groundの摩擦をつける
+        SwitchFriction(true);
 
         isInitialized = true;
 
+    }
+
+    public void DisableInit()
+    {
+        Debug.Log($"EditingMGRのDisableInit()を実行します");
+
+
+        //フラグの初期化
+        isP1Finished = false;
+        isP2Finished = false;
+
+        //書くInputMGRの初期化
+        p1InputMGR.Fe();
+        p2InputMGR.Fe();
     }
 
     private void DisplayingBoxesInWarehouse(int index)
@@ -90,6 +129,41 @@ public class EditingMGR : MonoBehaviour
         }
     }
 
+    public void FinishEditing(InputMGR.PlayerNum pNum)
+    {
+        if (pNum == InputMGR.PlayerNum.p1)
+        {
+            isP1Finished = true;
+        }
+        else if (pNum == InputMGR.PlayerNum.p2)
+        {
+            isP2Finished = true;
+        }
+        else
+        {
+            Debug.LogError($"FinishEditingのpNumが予期せぬ値になっています pNum:{pNum}");
+        }
+
+        if (isP1Finished && isP2Finished)
+        {
+            SwitchFriction(false);
+            GameManager.instance.Battling();
+        }
+    }
+
+
+    public void DestroyBoxFromWarehouse()
+    {
+        for(int i = 0; i < p1warehouses.Length; i++)
+        {
+            Destroy(p1warehouses[i]);
+        }
+
+        for (int i = 0; i < p2warehouses.Length; i++)
+        {
+            Destroy(p2warehouses[i]);
+        }
+    }
 
     //Getter
     public GameObject[] GetBoxFromP1Warehouse()

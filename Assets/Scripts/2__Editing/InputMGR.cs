@@ -6,6 +6,8 @@ public class InputMGR : MonoBehaviour
 {
     EditingMGR editingMGR;
 
+    bool isFristInit = true;
+
     [SerializeField] PlayerNum pNum;
 
     public enum PlayerNum
@@ -34,10 +36,9 @@ public class InputMGR : MonoBehaviour
     //Placing
 
     //初期化フラグ
-    bool isFirstSelecting = true;
-    bool isFirstMoving = true;
-    bool isFirstPlacing = true;
-    bool isFirstSelectingBoxByIndex = true;
+    bool isFirstSelecting;
+    bool isFirstMoving;
+    bool isFirstPlacing;
 
     public enum Step
     {
@@ -59,8 +60,19 @@ public class InputMGR : MonoBehaviour
     {
         Debug.Log($"InputMGRのInit()を実行します");
 
-        editingMGR = GameManager.instance.editingMGR;
-        notSelectedIndexes = new List<int>();
+        if (isFristInit)
+        {
+            editingMGR = GameManager.instance.editingMGR;
+            notSelectedIndexes = new List<int>();
+
+            isFristInit = false;
+        }
+
+        //初期化フラグの初期化
+        isFirstSelecting = true;
+        isFirstMoving = true;
+        isFirstPlacing = true;
+
         if (pNum == PlayerNum.p1)
         {
             boxFromWarehouse = editingMGR.GetBoxFromP1Warehouse();
@@ -82,8 +94,28 @@ public class InputMGR : MonoBehaviour
 
         ChangeBoxColor();
 
-        //Groundの摩擦をつける
-        editingMGR.SwitchFriction(true);
+
+    }
+
+    public void Fe() //finalize
+    {
+
+        //倉庫の箱を削除する
+        editingMGR.DestroyBoxFromWarehouse();
+
+        //配置した箱を削除する
+        for (int i = 0; i < factory.transform.childCount; i++)
+        {
+            Destroy(factory.transform.GetChild(i).gameObject);
+        }
+
+
+
+        //ステップを戻す
+        _step = Step.Selecting;
+
+        //リストを削除
+        notSelectedIndexes.Clear();
     }
 
     private void Update()
@@ -108,7 +140,7 @@ public class InputMGR : MonoBehaviour
         }
         else if (_step == Step.Finish)
         {
-            GameManager.instance.FinishEditing(pNum);
+            editingMGR.FinishEditing(pNum);
         }
         else
         {
@@ -182,17 +214,22 @@ public class InputMGR : MonoBehaviour
         //Debug.Log($"ChangeBoxColorを実行します");
         for (int i = 0; i < boxFromWarehouse.Length; i++)
         {
-            //Debug.Log($"boxFromWarehouse.Length:{boxFromWarehouse.Length}, listIndex:{listIndex}");
+            Debug.Log($"boxFromWarehouse.Length:{boxFromWarehouse.Length}, listIndex:{listIndex}, notSelectedIndexes:{string.Join(",", notSelectedIndexes)}");
+            //Debug.Log($"boxFromWarehouse[{i}]:{boxFromWarehouse[i]}");
+
             if (notSelectedIndexes.Count != 0 && i == notSelectedIndexes[listIndex]) //リストの要素があることの確認が必要
             {
+                Debug.Log($"緑色にします");
                 boxFromWarehouse[i].GetComponent<SpriteRenderer>().color = Color.green;
             }
             else if (notSelectedIndexes.Contains(i))
             {
+                Debug.Log($"白色にします");
                 boxFromWarehouse[i].GetComponent<SpriteRenderer>().color = Color.white;
             }
             else
             {
+                Debug.Log($"灰色にします");
                 boxFromWarehouse[i].GetComponent<SpriteRenderer>().color = Color.gray;
             }
 
@@ -352,23 +389,6 @@ public class InputMGR : MonoBehaviour
 
 
     }
-
-
-
-    //public void SwitchFriction(bool isOn)
-    //{
-    //    if (isOn)
-    //    {
-    //        ground.GetComponent<BoxCollider2D>().sharedMaterial.friction = 1f;
-    //        Debug.Log($"OnFriction value:{ground.GetComponent<BoxCollider2D>().sharedMaterial.friction}");
-    //    }
-    //    else
-    //    {
-    //        ground.GetComponent<BoxCollider2D>().sharedMaterial.friction = 0;
-    //        Debug.Log($"OffFriction value:{ground.GetComponent<BoxCollider2D>().sharedMaterial.friction}");
-
-    //    }
-    //}
 
 
     //プレイヤーに依ってキーが異なる

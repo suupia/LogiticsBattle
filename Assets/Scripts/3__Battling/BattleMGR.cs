@@ -4,8 +4,6 @@ using UnityEngine;
 
 public class BattleMGR : MonoBehaviour
 {
-    EditingMGR editingMGR;
-
     [SerializeField] GameObject player1fcty;
     [SerializeField] GameObject player2fcty;
 
@@ -15,11 +13,16 @@ public class BattleMGR : MonoBehaviour
 
     InputMGR.PlayerNum winPNum;
 
+    private void OnEnable()
+    {
+        Init();
+    }
+
+
+
     public void Init()
     {
         Debug.Log($"BattleMGRのInit()を実行します");
-
-        editingMGR = GameManager.instance.editingMGR;
     }
 
     private void Update()
@@ -52,7 +55,7 @@ public class BattleMGR : MonoBehaviour
     {
         yield return new WaitForSeconds(waitTime);
 
-        editingMGR.SwitchFriction(true);
+        GameManager.instance.editingMGR.SwitchFriction(true);
 
         Judge();
     }

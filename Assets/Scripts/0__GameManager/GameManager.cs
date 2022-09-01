@@ -56,6 +56,7 @@ public class GameManager : MonoBehaviour
 
     public void Editing()
     {
+        Debug.Log($"_stateをEditingに移行します");
         isP1Finished = false;
         isP2Finished = false;
         __Editing.SetActive(true);
@@ -64,34 +65,32 @@ public class GameManager : MonoBehaviour
 
     public void Battling()
     {
+        Debug.Log($"_stateをBattlingに移行します");
+
         __Battleing.SetActive(true );
         _state = State.Battling;
     }
 
     public void Result()
     {
+        Debug.Log($"_stateをResultに移行します");
+
         __Result.SetActive(true);
         _state = State.Result;
     }
 
-    public void FinishEditing(InputMGR.PlayerNum pNum)
-    {
-        if(pNum == InputMGR.PlayerNum.p1)
-        {
-            isP1Finished = true;
-        }else if(pNum == InputMGR.PlayerNum.p2)
-        {
-            isP2Finished = true;
-        }
-        else
-        {
-            Debug.LogError($"FinishEditingのpNumが予期せぬ値になっています pNum:{pNum}");
-        }
 
-        if (isP1Finished && isP2Finished)
-        {
-            editingMGR.SwitchFriction(false);
-            Battling();
-        }
+
+    public void ReTurnToTitle()
+    {
+        Debug.Log($"ReTurnToTitleを実行します");
+
+
+        //いったん全部非表示
+        __Editing.SetActive(false);
+        __Battleing.SetActive(false);
+        __Result.SetActive(false);
+
+        Editing();
     }
 }
