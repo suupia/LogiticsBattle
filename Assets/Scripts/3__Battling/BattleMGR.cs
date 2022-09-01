@@ -102,15 +102,19 @@ public class BattleMGR : MonoBehaviour
         string result;
         if (p1Point > p2Point)
         {
-            result = $"Player1 Wins ! (p1:{p1Point}, p2:{p2Point})";
+            result = $"Player1 Wins !\n(p1:{p1Point}, p2:{p2Point})";
+            Debug.Log($"Player1 Wins ! (p1:{p1Point}, p2:{p2Point})");
 
         }else if(p1Point < p2Point)
         {
-            result = $"Player2 Wins ! (p1:{p1Point}, p2:{p2Point})";
+            result = $"Player2 Wins !\n(p1:{p1Point}, p2:{p2Point})";
+            Debug.Log($"Player2 Wins ! (p1:{p1Point}, p2:{p2Point})");
         }
         else
         {
-            result = $"Draw (p1:{p1Point}, p2:{p2Point})";
+            result = $"Draw\n(p1:{p1Point}, p2:{p2Point})";
+            Debug.Log($"Draw (p1:{p1Point}, p2:{p2Point})");
+
         }
         GameManager.instance.resultMGR.SetResultText(result);
         Debug.Log(result);
