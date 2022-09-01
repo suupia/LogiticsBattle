@@ -11,18 +11,19 @@ public class BattleMGR : MonoBehaviour
 
     float waitTime = 2;
 
-    InputMGR.PlayerNum winPNum;
+    bool isFirstLaunchBattle;
 
     private void OnEnable()
     {
-        Init();
+        EnableInit();
     }
 
 
 
-    public void Init()
+    public void EnableInit()
     {
         Debug.Log($"BattleMGRのInit()を実行します");
+        isFirstLaunchBattle = true;
     }
 
     private void Update()
@@ -30,7 +31,7 @@ public class BattleMGR : MonoBehaviour
         if (GameManager.instance.state != GameManager.State.Battling) return;
 
 
-        if (Input.GetKeyDown(KeyCode.R))
+        if (Input.GetKeyDown(KeyCode.R) && isFirstLaunchBattle)
         {
             LaunchingBox();
         }
@@ -38,6 +39,8 @@ public class BattleMGR : MonoBehaviour
 
     private void LaunchingBox()
     {
+        isFirstLaunchBattle = false;
+
         for(int i = 0; i < player1fcty.transform.childCount; i++)
         {
             player1fcty.transform.GetChild(i).gameObject.GetComponent<Rigidbody2D>().AddForce(Vector2.right * amount,ForceMode2D.Impulse);
